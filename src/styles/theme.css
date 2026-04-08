@@ -1,0 +1,97 @@
+/* ==========================================================
+   TEMA GLOBAL — NutriSmart
+   Painel Administrativo do Nutricionista
+   Paleta: Marrom + Laranja com gradientes quentes
+   ========================================================== */
+
+@theme {
+  /* --- Paleta laranja --- */
+  --color-brand-50:  #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-brand-800: #9a3412;
+  --color-brand-900: #7c2d12;
+
+  /* --- Paleta marrom/stone --- */
+  --color-brown-50:  #fafaf9;
+  --color-brown-100: #f5f5f4;
+  --color-brown-200: #e7e5e4;
+  --color-brown-300: #d6d3d1;
+  --color-brown-400: #a8a29e;
+  --color-brown-500: #78716c;
+  --color-brown-600: #57534e;
+  --color-brown-700: #44403c;
+  --color-brown-800: #292524;
+  --color-brown-900: #1c1917;
+
+  /* --- Cores de superfície / neutros --- */
+  --color-surface-white:     #ffffff;
+  --color-surface-light:     #fff7ed;
+  --color-surface-muted:     #fef3c7;
+  --color-surface-card:      #ffffff;
+
+  /* --- Cores de texto --- */
+  --color-text-primary:   #1c1917;
+  --color-text-secondary: #44403c;
+  --color-text-muted:     #78716c;
+  --color-text-inverted:  #ffffff;
+
+  /* --- Cores de estado --- */
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger:  #dc2626;
+  --color-info:    #0284c7;
+
+  /* --- Cores de borda --- */
+  --color-border-light: #fed7aa;
+  --color-border-brand: #fb923c;
+
+  /* --- Tipografia --- */
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  --font-normal:    400;
+  --font-medium:    500;
+  --font-semibold:  600;
+  --font-bold:      700;
+
+  --leading-tight:   1.25;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+
+  /* --- Espaçamentos --- */
+  --spacing-section-y: 5rem;
+  --spacing-section-x: 1.5rem;
+  --spacing-container: 72rem;
+
+  /* --- Border radius --- */
+  --radius-sm:   0.5rem;
+  --radius-md:   0.75rem;
+  --radius-lg:   1rem;
+  --radius-xl:   1.5rem;
+  --radius-full: 9999px;
+
+  /* --- Sombras --- */
+  --shadow-card:       0 1px 3px rgba(124,45,18,0.08), 0 1px 2px rgba(124,45,18,0.05);
+  --shadow-card-hover: 0 8px 24px rgba(234,88,12,0.15);
+  --shadow-sidebar:    4px 0 20px rgba(28,25,23,0.15);
+  --shadow-btn:        0 2px 8px rgba(234,88,12,0.35);
+
+  /* --- Transições --- */
+  --transition-base: 200ms ease;
+  --transition-slow: 350ms ease;
+}
