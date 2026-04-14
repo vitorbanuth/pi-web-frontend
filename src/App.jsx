@@ -3,29 +3,12 @@ import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 import Dashboard from './pages/Dashboard'
 import PatientList from './pages/PatientList'
-import PatientDetail from './pages/PatientDetail'
 
 function App() {
   const [activePage, setActivePage] = useState('dashboard')
-  const [selectedPatient, setSelectedPatient] = useState(null)
-
-  function handleSelectPatient(patient) {
-    setSelectedPatient(patient)
-    setActivePage('patientDetail')
-  }
-
-  function handleBackToList() {
-    setSelectedPatient(null)
-    setActivePage('patients')
-  }
 
   const renderPage = () => {
-    if (activePage === 'patientDetail') {
-      return <PatientDetail patient={selectedPatient} onBack={handleBackToList} />
-    }
-    if (activePage === 'patients') {
-      return <PatientList onSelectPatient={handleSelectPatient} />
-    }
+    if (activePage === 'patients') return <PatientList />
     return <Dashboard onNavigate={setActivePage} />
   }
 

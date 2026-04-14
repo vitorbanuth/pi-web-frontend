@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { patients as initialPatients, patientDetails } from '../utils/mockData'
+import { patients as initialPatients } from '../utils/mockData'
 
 const emptyForm = { name: '', age: '', goal: '', weight: '' }
 
-function PatientList({ onSelectPatient }) {
+function PatientList() {
   const [search, setSearch] = useState('')
   const [patients, setPatients] = useState(initialPatients)
   const [showModal, setShowModal] = useState(false)
@@ -198,11 +198,7 @@ function PatientList({ onSelectPatient }) {
           </thead>
           <tbody>
             {filtered.map((p) => (
-              <tr
-                key={p.id}
-                onClick={() => onSelectPatient?.(patientDetails[p.id] ?? p)}
-                className="border-b border-stone-50 last:border-0 hover:bg-orange-50/50 cursor-pointer"
-              >
+              <tr key={p.id} className="border-b border-stone-50 last:border-0 hover:bg-orange-50/50">
                 <td className="px-5 py-3 font-medium text-stone-800">{p.name}</td>
                 <td className="px-5 py-3 text-stone-500">{p.age}</td>
                 <td className="px-5 py-3 text-stone-500">{p.goal}</td>
