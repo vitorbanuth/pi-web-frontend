@@ -178,7 +178,19 @@ function PatientList({ onSelectPatient }) {
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Idade</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Objetivo</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Peso (kg)</th>
-              <th className="text-left px-5 py-3 text-stone-600 font-medium">Macros (g)</th>
+              <th className="text-left px-5 py-3 text-stone-600 font-medium">
+                <div className="flex items-center gap-1">
+                  Macros (g)
+                  <div className="relative group">
+                    <span className="w-4 h-4 rounded-full bg-stone-200 text-stone-500 text-xs flex items-center justify-center cursor-default">?</span>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-5 z-10 hidden group-hover:block bg-stone-800 text-white text-xs rounded-lg px-3 py-2 w-36 shadow-lg">
+                      <p><span className="text-orange-300 font-bold">P</span> — Proteína</p>
+                      <p><span className="text-amber-300 font-bold">C</span> — Carboidrato</p>
+                      <p><span className="text-stone-300 font-bold">G</span> — Gordura</p>
+                    </div>
+                  </div>
+                </div>
+              </th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Adesão</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Última consulta</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Status</th>
