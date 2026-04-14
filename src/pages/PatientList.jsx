@@ -178,6 +178,7 @@ function PatientList({ onSelectPatient }) {
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Idade</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Objetivo</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Peso (kg)</th>
+              <th className="text-left px-5 py-3 text-stone-600 font-medium">Macros (g)</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Adesão</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Última consulta</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Status</th>
@@ -194,6 +195,24 @@ function PatientList({ onSelectPatient }) {
                 <td className="px-5 py-3 text-stone-500">{p.age}</td>
                 <td className="px-5 py-3 text-stone-500">{p.goal}</td>
                 <td className="px-5 py-3 text-stone-500">{p.weight}</td>
+                <td className="px-5 py-3">
+                  {p.macros ? (
+                    <div className="text-xs space-y-0.5">
+                      {[
+                        { label: 'P', m: p.macros.protein, color: 'text-orange-600' },
+                        { label: 'C', m: p.macros.carbs,   color: 'text-amber-600'  },
+                        { label: 'G', m: p.macros.fat,     color: 'text-stone-500'  },
+                      ].map(({ label, m, color }) => (
+                        <div key={label} className="flex items-center gap-1">
+                          <span className="text-stone-400 w-3">{label}</span>
+                          <span className={`font-medium ${m.actual > m.target ? 'text-red-500' : color}`}>{m.actual}</span>
+                          <span className="text-stone-300">/</span>
+                          <span className="text-stone-400">{m.target}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : <span className="text-stone-300">—</span>}
+                </td>
                 <td className="px-5 py-3">
                   <span className={`font-medium ${p.compliance >= 80 ? 'text-green-600' : p.compliance >= 70 ? 'text-amber-600' : 'text-red-500'}`}>
                     {p.compliance}%
