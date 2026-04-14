@@ -74,6 +74,7 @@ function MealRow({ meal }) {
   )
 }
 
+
 function PatientDetail({ patient, onBack }) {
   if (!patient) {
     return (
@@ -246,6 +247,7 @@ function PatientDetail({ patient, onBack }) {
               Agendar consulta
             </button>
           </div>
+
         </div>
       </div>
     </div>
