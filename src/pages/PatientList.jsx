@@ -7,6 +7,7 @@ function PatientList({ onSelectPatient }) {
   const [search, setSearch] = useState('')
   const [patients, setPatients] = useState(initialPatients)
   const [showModal, setShowModal] = useState(false)
+  const [showWater, setShowWater] = useState(false)
   const [form, setForm] = useState(emptyForm)
 
   const filtered = patients.filter(p =>
@@ -107,6 +108,43 @@ function PatientList({ onSelectPatient }) {
         </div>
       )}
 
+      {/* Widget Consumo de Água */}
+      {showWater && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🫗</span>
+                <h2 className="text-base font-semibold text-blue-700">Consumo de Água</h2>
+              </div>
+              <button onClick={() => setShowWater(false)} className="text-stone-400 hover:text-stone-600 text-lg leading-none">✕</button>
+            </div>
+
+            <div className="space-y-3">
+              {patients.map(p => {
+                const pct = Math.min(Math.round((p.water / p.waterGoal) * 100), 100)
+                return (
+                  <div key={p.id} className="flex items-center gap-3">
+                    <span className="text-sm text-stone-700 w-36 truncate">{p.name}</span>
+                    <div className="flex-1">
+                      <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-blue-400" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                    <div className="text-right w-36 text-xs text-stone-500 flex items-center gap-1 justify-end">
+                      <span>🍶</span>
+                      <span className="text-blue-600 font-medium">{p.water ?? 0} ml</span>
+                      <span>/</span>
+                      <span>Meta: {p.waterGoal ?? 2000} ml</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Search bar */}
       <div className="flex items-center gap-3">
         <input
@@ -123,6 +161,12 @@ function PatientList({ onSelectPatient }) {
         >
           + Novo Paciente
         </button>
+        <button
+          onClick={() => setShowWater(true)}
+          className="px-4 py-2 text-sm font-medium text-blue-600 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100"
+        >
+          🫗 Consumo de Água
+        </button>
       </div>
 
       {/* Table */}
@@ -136,7 +180,6 @@ function PatientList({ onSelectPatient }) {
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Peso (kg)</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Adesão</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Última consulta</th>
-              <th className="text-left px-5 py-3 text-stone-600 font-medium">Água (ml)</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Status</th>
             </tr>
           </thead>
@@ -157,7 +200,6 @@ function PatientList({ onSelectPatient }) {
                   </span>
                 </td>
                 <td className="px-5 py-3 text-stone-500">{p.lastVisit}</td>
-                <td className="px-5 py-3 text-stone-500">{p.water ?? '-'}</td>
                 <td className="px-5 py-3">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                     p.status === 'Ativo'
