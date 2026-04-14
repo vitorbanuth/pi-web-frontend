@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { patients as initialPatients } from '../utils/mockData'
 
-const emptyForm = { name: '', age: '', goal: '', weight: '' }
+const emptyForm = { name: '', age: '', goal: '', weight: '', protein: '', carbs: '', fat: '', waterGoal: '' }
 
 function PatientList() {
   const [search, setSearch] = useState('')
@@ -16,6 +16,7 @@ function PatientList() {
 
   function handleSave() {
     if (!form.name.trim()) return
+    const hasMacros = form.protein || form.carbs || form.fat
     const novo = {
       id: patients.length + 1,
       name: form.name.trim(),
@@ -25,6 +26,13 @@ function PatientList() {
       compliance: 0,
       lastVisit: '-',
       status: 'Ativo',
+      water: 0,
+      waterGoal: Number(form.waterGoal) || 2000,
+      macros: hasMacros ? {
+        protein: { actual: 0, target: Number(form.protein) || 0 },
+        carbs:   { actual: 0, target: Number(form.carbs)   || 0 },
+        fat:     { actual: 0, target: Number(form.fat)     || 0 },
+      } : null,
     }
     setPatients([...patients, novo])
     setForm(emptyForm)
@@ -85,6 +93,55 @@ function PatientList() {
                   <option>Manutenção</option>
                   <option>Saúde</option>
                 </select>
+              </div>
+
+              {/* Macros */}
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">Macros — metas diárias (g)</label>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="block text-xs text-orange-500 mb-1">Proteína</label>
+                    <input
+                      type="number"
+                      value={form.protein}
+                      onChange={e => setForm({ ...form, protein: e.target.value })}
+                      className="w-full border border-orange-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                      placeholder="Ex: 130"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs text-amber-500 mb-1">Carboidrato</label>
+                    <input
+                      type="number"
+                      value={form.carbs}
+                      onChange={e => setForm({ ...form, carbs: e.target.value })}
+                      className="w-full border border-orange-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                      placeholder="Ex: 220"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs text-stone-400 mb-1">Gordura</label>
+                    <input
+                      type="number"
+                      value={form.fat}
+                      onChange={e => setForm({ ...form, fat: e.target.value })}
+                      className="w-full border border-orange-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                      placeholder="Ex: 65"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Consumo de Água */}
+              <div>
+                <label className="block text-xs font-medium text-blue-600 mb-1">🫗 Meta de Água (ml/dia)</label>
+                <input
+                  type="number"
+                  value={form.waterGoal}
+                  onChange={e => setForm({ ...form, waterGoal: e.target.value })}
+                  className="w-full border border-blue-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+                  placeholder="Ex: 2000"
+                />
               </div>
             </div>
 
