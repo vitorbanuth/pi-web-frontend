@@ -1,47 +1,77 @@
-import { useState } from 'react'
-import { patients as initialPatients } from '../utils/mockData'
+import { useState, useEffect } from 'react'
+import { fetchPatients, createPatient, deletePatient } from '../services/patientService'
 
 const emptyForm = { name: '', age: '', goal: '', weight: '', protein: '', carbs: '', fat: '', waterGoal: '' }
 
 function PatientList() {
   const [search, setSearch] = useState('')
-  const [patients, setPatients] = useState(initialPatients)
+  const [patients, setPatients] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [showWater, setShowWater] = useState(false)
   const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
+
+  useEffect(() => {
+    fetchPatients()
+      .then(setPatients)
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [])
 
   const filtered = patients.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  function handleSave() {
-    if (!form.name.trim()) return
-    const hasMacros = form.protein || form.carbs || form.fat
-    const novo = {
-      id: patients.length + 1,
-      name: form.name.trim(),
-      age: Number(form.age) || '-',
-      goal: form.goal.trim() || '-',
-      weight: Number(form.weight) || '-',
-      compliance: 0,
-      lastVisit: '-',
-      status: 'Ativo',
-      water: 0,
-      waterGoal: Number(form.waterGoal) || 2000,
-      macros: hasMacros ? {
-        protein: { actual: 0, target: Number(form.protein) || 0 },
-        carbs:   { actual: 0, target: Number(form.carbs)   || 0 },
-        fat:     { actual: 0, target: Number(form.fat)     || 0 },
-      } : null,
+  async function handleDelete(id) {
+    if (!window.confirm('Tem certeza que deseja remover este paciente?')) return
+    setDeletingId(id)
+    try {
+      await deletePatient(id)
+      setPatients(prev => prev.filter(p => p.id !== id))
+    } catch (e) {
+      alert('Erro ao remover paciente: ' + e.message)
+    } finally {
+      setDeletingId(null)
     }
-    setPatients([...patients, novo])
-    setForm(emptyForm)
-    setShowModal(false)
+  }
+
+  async function handleSave() {
+    if (!form.name.trim()) return
+    setSaving(true)
+    try {
+      const novo = await createPatient(form)
+      setPatients(prev => [...prev, novo])
+      setForm(emptyForm)
+      setShowModal(false)
+    } catch (e) {
+      alert('Erro ao salvar paciente: ' + e.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6 flex items-center justify-center h-64">
+        <p className="text-stone-400 text-sm">Carregando pacientes...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 flex items-center justify-center h-64">
+        <p className="text-red-400 text-sm">Erro ao carregar pacientes: {error}</p>
+      </div>
+    )
   }
 
   return (
     <div className="p-6 space-y-4">
-      {/* Modal */}
+      {/* Modal Novo Paciente */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md space-y-4">
@@ -154,11 +184,11 @@ function PatientList() {
               </button>
               <button
                 onClick={handleSave}
-                disabled={!form.name.trim()}
+                disabled={!form.name.trim() || saving}
                 className="px-4 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-40"
                 style={{ background: '#ea580c' }}
               >
-                Salvar
+                {saving ? 'Salvando...' : 'Salvar'}
               </button>
             </div>
           </div>
@@ -248,9 +278,9 @@ function PatientList() {
                   </div>
                 </div>
               </th>
-              <th className="text-left px-5 py-3 text-stone-600 font-medium">Adesão</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Última consulta</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Status</th>
+              <th className="px-5 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -278,11 +308,6 @@ function PatientList() {
                     </div>
                   ) : <span className="text-stone-300">—</span>}
                 </td>
-                <td className="px-5 py-3">
-                  <span className={`font-medium ${p.compliance >= 80 ? 'text-green-600' : p.compliance >= 70 ? 'text-amber-600' : 'text-red-500'}`}>
-                    {p.compliance}%
-                  </span>
-                </td>
                 <td className="px-5 py-3 text-stone-500">{p.lastVisit}</td>
                 <td className="px-5 py-3">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -292,6 +317,23 @@ function PatientList() {
                   }`}>
                     {p.status}
                   </span>
+                </td>
+                <td className="px-5 py-3 text-right">
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    disabled={deletingId === p.id}
+                    className="text-stone-300 hover:text-red-500 transition-colors disabled:opacity-40"
+                    title="Remover paciente"
+                  >
+                    {deletingId === p.id ? '...' : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6M14 11v6" />
+                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                      </svg>
+                    )}
+                  </button>
                 </td>
               </tr>
             ))}
