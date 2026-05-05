@@ -11,6 +11,7 @@ async function request(path, options = {}) {
     throw new Error(body.error || `Erro ${res.status}`);
   }
 
+  if (res.status === 204) return null;
   return res.json();
 }
 

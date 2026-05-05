@@ -32,6 +32,25 @@ export async function deletePatient(id) {
   return api.delete(`/api/users/${id}`);
 }
 
+export async function updatePatient(id, form) {
+  const body = {
+    name: form.name.trim(),
+    age: Number(form.age) || undefined,
+    weight: Number(form.weight) || undefined,
+    goal: form.goal || undefined,
+    waterGoal: Number(form.waterGoal) || 2000,
+    macroTargets: (form.protein || form.carbs || form.fat)
+      ? {
+          protein: Number(form.protein) || 0,
+          carbs:   Number(form.carbs)   || 0,
+          fat:     Number(form.fat)     || 0,
+        }
+      : undefined,
+  };
+  const updated = await api.put(`/api/users/${id}`, body);
+  return mapPatient({ ...updated, latestLog: updated.latestLog ?? null });
+}
+
 export async function createPatient(form) {
   const body = {
     name: form.name.trim(),
