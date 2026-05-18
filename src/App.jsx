@@ -3,12 +3,14 @@ import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 import Dashboard from './pages/Dashboard'
 import PatientList from './pages/PatientList'
+import UserList from './pages/UserList'
 
 function App() {
   const [activePage, setActivePage] = useState('dashboard')
 
   const renderPage = () => {
     if (activePage === 'patients') return <PatientList />
+    if (activePage === 'users') return <UserList />
     return <Dashboard onNavigate={setActivePage} />
   }
 
