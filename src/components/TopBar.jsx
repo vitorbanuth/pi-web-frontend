@@ -1,20 +1,25 @@
 const pageTitles = {
-  dashboard: 'Dashboard',
-  patients:  'Pacientes',
-  users:     'Usuários',
+  dashboard:   'Dashboard',
+  patients:    'Pacientes',
+  patientLogs: 'Histórico do Paciente',
+  users:       'Usuários',
 }
 
 const weekdays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
 const months   = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 
-function TopBar({ activePage }) {
+function TopBar({ activePage, patientName }) {
   const now = new Date()
   const dateStr = `${weekdays[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}. de ${now.getFullYear()}`
+
+  const title = activePage === 'patientLogs' && patientName
+    ? patientName
+    : (pageTitles[activePage] || 'Dashboard')
 
   return (
     <header className="bg-white border-b border-stone-100 px-6 py-3.5 flex items-center justify-between">
       <h1 className="text-sm font-semibold text-stone-800 tracking-wide uppercase">
-        {pageTitles[activePage] || 'Dashboard'}
+        {title}
       </h1>
 
       <div className="flex items-center gap-4">

@@ -3,13 +3,12 @@ import { fetchPatients, createPatient, deletePatient, updatePatient } from '../s
 
 const emptyForm = { name: '', age: '', goal: '', weight: '', protein: '', carbs: '', fat: '', waterGoal: '' }
 
-function PatientList() {
+function PatientList({ onSelectPatient }) {
   const [search, setSearch] = useState('')
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
-  const [showWater, setShowWater] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
@@ -271,43 +270,6 @@ function PatientList() {
         </div>
       )}
 
-      {/* Widget Consumo de Água */}
-      {showWater && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">🫗</span>
-                <h2 className="text-base font-semibold text-blue-700">Consumo de Água</h2>
-              </div>
-              <button onClick={() => setShowWater(false)} className="text-stone-400 hover:text-stone-600 text-lg leading-none">✕</button>
-            </div>
-
-            <div className="space-y-3">
-              {patients.map(p => {
-                const pct = Math.min(Math.round((p.water / p.waterGoal) * 100), 100)
-                return (
-                  <div key={p.id} className="flex items-center gap-3">
-                    <span className="text-sm text-stone-700 w-36 truncate">{p.name}</span>
-                    <div className="flex-1">
-                      <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full bg-blue-400" style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                    <div className="text-right w-36 text-xs text-stone-500 flex items-center gap-1 justify-end">
-                      <span>🍶</span>
-                      <span className="text-blue-600 font-medium">{p.water ?? 0} ml</span>
-                      <span>/</span>
-                      <span>Meta: {p.waterGoal ?? 2000} ml</span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Search bar */}
       <div className="flex items-center gap-3">
         <input
@@ -324,12 +286,6 @@ function PatientList() {
         >
           + Novo Paciente
         </button>
-        <button
-          onClick={() => setShowWater(true)}
-          className="px-4 py-2 text-sm font-medium text-blue-600 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100"
-        >
-          🫗 Consumo de Água
-        </button>
       </div>
 
       {/* Table */}
@@ -341,19 +297,7 @@ function PatientList() {
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Idade</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Objetivo</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Peso (kg)</th>
-              <th className="text-left px-5 py-3 text-stone-600 font-medium">
-                <div className="flex items-center gap-1">
-                  Macros (g)
-                  <div className="relative group">
-                    <span className="w-4 h-4 rounded-full bg-stone-200 text-stone-500 text-xs flex items-center justify-center cursor-default">?</span>
-                    <div className="absolute left-1/2 -translate-x-1/2 top-5 z-10 hidden group-hover:block bg-stone-800 text-white text-xs rounded-lg px-3 py-2 w-36 shadow-lg">
-                      <p><span className="text-orange-300 font-bold">P</span> — Proteína</p>
-                      <p><span className="text-amber-300 font-bold">C</span> — Carboidrato</p>
-                      <p><span className="text-stone-300 font-bold">G</span> — Gordura</p>
-                    </div>
-                  </div>
-                </div>
-              </th>
+              <th className="text-left px-5 py-3 text-stone-600 font-medium">Histórico</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Última consulta</th>
               <th className="text-left px-5 py-3 text-stone-600 font-medium">Status</th>
               <th className="px-5 py-3"></th>
@@ -367,22 +311,16 @@ function PatientList() {
                 <td className="px-5 py-3 text-stone-500">{p.goal}</td>
                 <td className="px-5 py-3 text-stone-500">{p.weight}</td>
                 <td className="px-5 py-3">
-                  {p.macros ? (
-                    <div className="text-xs space-y-0.5">
-                      {[
-                        { label: 'P', m: p.macros.protein, color: 'text-orange-600' },
-                        { label: 'C', m: p.macros.carbs,   color: 'text-amber-600'  },
-                        { label: 'G', m: p.macros.fat,     color: 'text-stone-500'  },
-                      ].map(({ label, m, color }) => (
-                        <div key={label} className="flex items-center gap-1">
-                          <span className="text-stone-400 w-3">{label}</span>
-                          <span className={`font-medium ${m.actual > m.target ? 'text-red-500' : color}`}>{m.actual}</span>
-                          <span className="text-stone-300">/</span>
-                          <span className="text-stone-400">{m.target}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : <span className="text-stone-300">—</span>}
+                  <button
+                    onClick={() => onSelectPatient(p)}
+                    className="flex items-center gap-1.5 text-xs font-medium text-orange-600 hover:text-orange-700 border border-orange-200 hover:border-orange-400 bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 3v18h18" />
+                      <polyline points="18 9 13 14 8 9 3 14" />
+                    </svg>
+                    Ver histórico
+                  </button>
                 </td>
                 <td className="px-5 py-3 text-stone-500">{p.lastVisit}</td>
                 <td className="px-5 py-3">

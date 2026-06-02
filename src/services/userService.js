@@ -27,6 +27,10 @@ export async function createUser(form) {
   return mapUser(created);
 }
 
+export async function deleteUser(id) {
+  return api.delete(`/api/accounts/${id}`);
+}
+
 export async function updateUser(id, form) {
   const body = {
     username: form.username?.trim() || undefined,

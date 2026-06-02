@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { fetchUsers, createUser, updateUser } from '../services/userService'
+import { fetchUsers, createUser, updateUser, deleteUser } from '../services/userService'
 import { fetchPatients } from '../services/patientService'
 
 const emptyForm = { username: '', email: '', password: '', patientId: '' }
@@ -14,6 +14,8 @@ function UserList() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
+  const [confirmTarget, setConfirmTarget] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
   const [toast, setToast] = useState(null)
 
   useEffect(() => {
@@ -45,6 +47,25 @@ function UserList() {
     })
     setEditTarget(u.id)
     setShowModal(true)
+  }
+
+  function handleDelete(u) {
+    setConfirmTarget({ id: u.id, name: u.username })
+  }
+
+  async function confirmDelete() {
+    const { id } = confirmTarget
+    setConfirmTarget(null)
+    setDeletingId(id)
+    try {
+      await deleteUser(id)
+      setUsers(prev => prev.filter(u => u.id !== id))
+    } catch (e) {
+      setToast(e.message)
+      setTimeout(() => setToast(null), 4000)
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   async function handleSave() {
@@ -94,6 +115,32 @@ function UserList() {
         <div className="fixed top-5 right-5 z-50 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl shadow-lg flex items-center gap-3">
           <span>⚠️ {toast}</span>
           <button onClick={() => setToast(null)} className="text-red-400 hover:text-red-600 font-bold leading-none">✕</button>
+        </div>
+      )}
+
+      {/* Dialog de confirmação de exclusão */}
+      {confirmTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4">
+            <h2 className="text-base font-semibold text-stone-800">Remover usuário</h2>
+            <p className="text-sm text-stone-500">
+              Tem certeza que deseja remover <span className="font-medium text-stone-700">{confirmTarget.name}</span>? Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                onClick={() => setConfirmTarget(null)}
+                className="px-4 py-2 text-sm text-stone-600 hover:text-stone-800"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg"
+              >
+                Remover
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -220,16 +267,33 @@ function UserList() {
                   )}
                 </td>
                 <td className="px-5 py-3 text-right">
-                  <button
-                    onClick={() => handleEdit(u)}
-                    className="text-stone-300 hover:text-orange-500 transition-colors"
-                    title="Editar usuário"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center justify-end gap-3">
+                    <button
+                      onClick={() => handleEdit(u)}
+                      className="text-stone-300 hover:text-orange-500 transition-colors"
+                      title="Editar usuário"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(u)}
+                      disabled={deletingId === u.id}
+                      className="text-stone-300 hover:text-red-500 transition-colors disabled:opacity-40"
+                      title="Remover usuário"
+                    >
+                      {deletingId === u.id ? '...' : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -51,6 +51,10 @@ export async function updatePatient(id, form) {
   return mapPatient({ ...updated, latestLog: updated.latestLog ?? null });
 }
 
+export async function fetchPatientLogs(patientId) {
+  return api.get(`/api/daily-log/patient/${patientId}`);
+}
+
 export async function createPatient(form) {
   const body = {
     name: form.name.trim(),
