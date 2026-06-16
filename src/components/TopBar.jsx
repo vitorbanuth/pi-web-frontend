@@ -1,8 +1,10 @@
 const pageTitles = {
-  dashboard:   'Dashboard',
-  patients:    'Pacientes',
-  patientLogs: 'Histórico do Paciente',
-  users:       'Usuários',
+  dashboard:          'Dashboard',
+  patients:           'Pacientes',
+  patientLogs:        'Histórico do Paciente',
+  suggestions:        'Sugestões Alimentares',
+  patientSuggestions: 'Sugestões Alimentares',
+  users:              'Usuários',
 }
 
 const weekdays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
@@ -12,7 +14,7 @@ function TopBar({ activePage, patientName }) {
   const now = new Date()
   const dateStr = `${weekdays[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}. de ${now.getFullYear()}`
 
-  const title = activePage === 'patientLogs' && patientName
+  const title = (activePage === 'patientLogs' || activePage === 'patientSuggestions') && patientName
     ? patientName
     : (pageTitles[activePage] || 'Dashboard')
 

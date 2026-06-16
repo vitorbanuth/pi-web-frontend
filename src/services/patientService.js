@@ -15,9 +15,10 @@ function mapPatient(raw) {
     waterGoal: raw.waterGoal ?? log?.hydration?.mlGoal ?? 2000,
     macros: raw.macroTargets
       ? {
-          protein: { actual: log?.nutrition?.protein ?? 0, target: raw.macroTargets.protein },
-          carbs:   { actual: log?.nutrition?.carbs   ?? 0, target: raw.macroTargets.carbs   },
-          fat:     { actual: log?.nutrition?.fat     ?? 0, target: raw.macroTargets.fat     },
+          kcal:    { target: raw.macroTargets.kcal    ?? 0 },
+          protein: { actual: log?.nutrition?.protein ?? 0, target: raw.macroTargets.protein ?? 0 },
+          carbs:   { actual: log?.nutrition?.carbs   ?? 0, target: raw.macroTargets.carbs   ?? 0 },
+          fat:     { actual: log?.nutrition?.fat     ?? 0, target: raw.macroTargets.fat     ?? 0 },
         }
       : null,
   };
@@ -39,13 +40,12 @@ export async function updatePatient(id, form) {
     weight: Number(form.weight) || undefined,
     goal: form.goal || undefined,
     waterGoal: Number(form.waterGoal) || 2000,
-    macroTargets: (form.protein || form.carbs || form.fat)
-      ? {
-          protein: Number(form.protein) || 0,
-          carbs:   Number(form.carbs)   || 0,
-          fat:     Number(form.fat)     || 0,
-        }
-      : undefined,
+    macroTargets: {
+      kcal:    Number(form.kcal)    || 0,
+      protein: Number(form.protein) || 0,
+      carbs:   Number(form.carbs)   || 0,
+      fat:     Number(form.fat)     || 0,
+    },
   };
   const updated = await api.put(`/api/users/${id}`, body);
   return mapPatient({ ...updated, latestLog: updated.latestLog ?? null });
@@ -62,13 +62,12 @@ export async function createPatient(form) {
     weight: Number(form.weight) || undefined,
     goal: form.goal || undefined,
     waterGoal: Number(form.waterGoal) || 2000,
-    macroTargets: (form.protein || form.carbs || form.fat)
-      ? {
-          protein: Number(form.protein) || 0,
-          carbs:   Number(form.carbs)   || 0,
-          fat:     Number(form.fat)     || 0,
-        }
-      : undefined,
+    macroTargets: {
+      kcal:    Number(form.kcal)    || 0,
+      protein: Number(form.protein) || 0,
+      carbs:   Number(form.carbs)   || 0,
+      fat:     Number(form.fat)     || 0,
+    },
   };
 
   const created = await api.post('/api/users', body);
